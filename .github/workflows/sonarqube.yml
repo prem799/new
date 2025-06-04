@@ -23,7 +23,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v4.1.0 # Use latest version from GitHub Marketplace
         env:
           SONAR_TOKEN: ${{ secrets.sonarqube }}
-          SONAR_HOST_URL: ${{ secrets.sonarqube1 }} # e.g., https://your-sonarqube-server.com
+          SONAR_HOST_URL: ${{ secrets.ec2}} # e.g., https://your-sonarqube-server.com
         with:
           projectBaseDir: . # Adjust if your source code is in a subdirectory
           args: >
@@ -35,4 +35,5 @@ jobs:
         uses: SonarSource/sonarqube-quality-gate-action@v4.1.0
         env:
           SONAR_TOKEN: ${{ secrets.sonarqube }}
+          SONAR_HOST_URL: ${{ secrets.ec2 }}
         timeout-minutes: 5 # Adjust timeout as needed
