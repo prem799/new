@@ -8,31 +8,24 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read # allows SonarQube to decorate PRs with analysis results
+  pull-requests: read
 
 jobs:
   Analysis:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Analyze with SonarQube
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-        # You can pin the exact commit or the version.
-        # uses: SonarSource/sonarqube-scan-action@v1.1.0
-        uses: SonarSource/sonarqube-scan-action@7295e71c9583053f5bf40e9d4068a0c974603ec8
-        env:
-          GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ sonarqube.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-          SONAR_HOST_URL: ${{ sonarqube1.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
-        with:
-          # Additional arguments for the sonarcloud scanner
-          args:
-            run: |
+      - name: Set up SonarQube Scanner
+        run: |
           curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip sonar-scanner.zip
           export PATH="$PWD/sonar-scanner-5.0.1.3006-linux/bin:$PATH"
           sonar-scanner \
             -Dsonar.projectKey=my-html-project \
             -Dsonar.sources=. \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
