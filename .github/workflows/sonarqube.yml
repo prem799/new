@@ -32,7 +32,7 @@ jobs:
             -Dsonar.verbose=true # Enable verbose logging for debugging
 
       - name: SonarQube Quality Gate Check
-        uses: sonarsource/sonarqube-quality-gate-action@v2
+        uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.sonarqube }}
           SONAR_HOST_URL: ${{ secrets.ec2 }}
