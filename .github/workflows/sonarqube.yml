@@ -1,4 +1,4 @@
-name: SonarQube analysis
+name: SonarQube Analysis
 
 on:
   push:
@@ -13,19 +13,26 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Disable shallow clone for better analysis accuracy
 
-      - name: Set up SonarQube Scanner
-        run: |
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner.zip
-          export PATH="$PWD/sonar-scanner-5.0.1.3006-linux/bin:$PATH"
-          sonar-scanner \
-            -Dsonar.projectKey=my-html-project \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4.1.0 # Use latest version from GitHub Marketplace
+        env:
+          SONAR_TOKEN: ${{ sonarqube.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ sonarqube1.SONAR_HOST_URL }} # e.g., https://your-sonarqube-server.com
+        with:
+          projectBaseDir: . # Adjust if your source code is in a subdirectory
+          args: >
+            -Dsonar.projectKey=my-html-project
+            -Dsonar.sources=.
+            -Dsonar.verbose=true # Enable verbose logging for debugging
 
+      - name: SonarQube Quality Gate Check
+        uses: SonarSource/sonarqube-quality-gate-action@v4.1.0
+        env:
+          SONAR_TOKEN: ${{ sonarqube.SONAR_TOKEN }}
+        timeout-minutes: 5 # Adjust timeout as needed
